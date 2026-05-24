@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Ejecutar script Python",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && python3 ${file}",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Lanzar brazo Panda",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && ros2 launch moveit_resources_panda_moveit_config demo.launch.py",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Lanzar Foxglove Bridge",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Servidor meshes 3D",
+      "type": "shell",
+      "command": "cd /root/robot_ws/install/moveit_resources_panda_description/share/moveit_resources_panda_description/ && python3 -m http.server 8080",
+      "presentation": { "reveal": "always", "panel": "new" }
+    }
+  ]
+}

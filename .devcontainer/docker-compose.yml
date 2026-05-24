@@ -1,0 +1,14 @@
+version: '3'
+services:
+  ros2:
+    image: arm64v8/ros:humble-ros-base
+    container_name: ros2_humble
+    ports:
+      - "8765:8765"
+      - "8080:8080"
+    volumes:
+      - ../:/root/robot_ws
+    platform: linux/arm64
+    stdin_open: true
+    tty: true
+    command: sleep infinity

@@ -1,0 +1,25 @@
+{
+  "name": "ROS 2 Robot",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "ros2",
+  "workspaceFolder": "/root/robot_ws",
+  "postStartCommand": "source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.pylint",
+        "ms-iot.vscode-ros"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/bin/python3",
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "terminal.integrated.env.linux": {
+          "ROS_DISTRO": "humble",
+          "AMENT_PREFIX_PATH": "/opt/ros/humble:/root/robot_ws/install",
+          "PYTHONPATH": "/opt/ros/humble/lib/python3.10/site-packages:/root/robot_ws/install/lib/python3.10/site-packages"
+        }
+      }
+    }
+  }
+}
