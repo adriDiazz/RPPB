@@ -1,0 +1,21 @@
+# Modelos y archivos binarios grandes
+*.pt
+*.pth
+*.onnx
+*.weights
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+dist/
+build/
+
+# Entorno
+.env
+*.log
+
+# macOS
+.DS_Store
