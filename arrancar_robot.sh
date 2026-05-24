@@ -1,26 +1,39 @@
 #!/bin/bash
-echo "🤖 Arrancando entorno robótico..."
+echo "Arrancando entorno robotico completo..."
 
-# Abrir XQuartz
-open -a XQuartz
-sleep 2
-xhost +localhost
-
-# Arrancar contenedor si no está corriendo
+# Arrancar contenedor si no esta corriendo
 docker start ros2_humble 2>/dev/null
+sleep 2
 
-# Terminal 1 - Brazo
-osascript -e 'tell app "Terminal" to do script "docker exec -it ros2_humble bash -c \"source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && ros2 launch moveit_resources_panda_moveit_config demo.launch.py\""'
+# Terminal 1 - Brazo Panda (MoveIt2)
+osascript -e 'tell app "Terminal" to do script "echo \"[1/5] Brazo Panda (MoveIt2)\" && docker exec -it ros2_humble bash -c \"source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && ros2 launch moveit_resources_panda_moveit_config demo.launch.py\""'
 
 sleep 3
 
-# Terminal 2 - Foxglove bridge
-osascript -e 'tell app "Terminal" to do script "docker exec -it ros2_humble bash -c \"source /opt/ros/humble/setup.bash && ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765\""'
+# Terminal 2 - Foxglove bridge (visualizar brazo en Foxglove Studio)
+osascript -e 'tell app "Terminal" to do script "echo \"[2/5] Foxglove Bridge\" && docker exec -it ros2_humble bash -c \"source /opt/ros/humble/setup.bash && ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765\""'
 
 sleep 2
 
-# Terminal 3 - Servidor meshes
-osascript -e 'tell app "Terminal" to do script "docker exec -it ros2_humble bash -c \"cd /root/robot_ws/install/moveit_resources_panda_description/share/moveit_resources_panda_description/ && python3 -m http.server 8080\""'
+# Terminal 3 - Servidor HTTP de meshes del Panda
+osascript -e 'tell app "Terminal" to do script "echo \"[3/5] Servidor meshes HTTP\" && docker exec -it ros2_humble bash -c \"cd /root/robot_ws/install/moveit_resources_panda_description/share/moveit_resources_panda_description/ && python3 -m http.server 8080\""'
 
-echo "✅ Todo arrancado. Conecta Foxglove a ws://localhost:8765"
-echo "📐 URDF: http://localhost:8080/urdf/panda_web.urdf"
+sleep 2
+
+# Terminal 4 - Gazebo con display virtual y VNC
+osascript -e 'tell app "Terminal" to do script "echo \"[4/5] Gazebo + VNC\" && docker exec -it ros2_humble bash -c \"pkill Xvfb 2>/dev/null; pkill x11vnc 2>/dev/null; pkill websockify 2>/dev/null; Xvfb :99 -screen 0 1280x1024x24 & sleep 2 && x11vnc -display :99 -nopw -listen 0.0.0.0 -xkb -forever -shared -bg -o /tmp/x11vnc.log && websockify --web /usr/share/novnc 6080 localhost:5900 & sleep 1 && DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 ign gazebo /root/robot_ws/worlds/camara_robot.sdf\""'
+
+sleep 5
+
+# Terminal 5 - Bridge camara Ignition -> ROS 2
+osascript -e 'tell app "Terminal" to do script "echo \"[5/5] Bridge camara Ignition->ROS2\" && docker exec -it ros2_humble bash -c \"source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge /camara/image@sensor_msgs/msg/Image[ignition.msgs.Image --ros-args -r /camara/image:=/camera/image_raw\""'
+
+echo ""
+echo "Todo arrancado. Servicios disponibles:"
+echo ""
+echo "  Foxglove Studio  -> ws://localhost:8765"
+echo "  URDF meshes      -> http://localhost:8080/urdf/panda_web.urdf"
+echo "  Gazebo (VNC)     -> http://localhost:6080/vnc.html"
+echo "  Camara topic     -> /camera/image_raw"
+echo ""
+echo "En Foxglove: anade panel Image y selecciona /camera/image_raw"

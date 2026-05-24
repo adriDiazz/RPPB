@@ -1,11 +1,13 @@
 version: '3'
 services:
   ros2:
-    image: arm64v8/ros:humble-ros-base
+    image: ros2_humble_backup
     container_name: ros2_humble
     ports:
       - "8765:8765"
       - "8080:8080"
+      - "5900:5900"
+      - "6080:6080"
     volumes:
       - ../:/root/robot_ws
     platform: linux/arm64
