@@ -1,0 +1,48 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Lanzar brazo Panda",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && ros2 launch moveit_resources_panda_moveit_config demo.launch.py",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Lanzar Foxglove Bridge",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=8765",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Servidor meshes 3D",
+      "type": "shell",
+      "command": "cd /root/robot_ws/install/moveit_resources_panda_description/share/moveit_resources_panda_description/ && python3 -m http.server 8080",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Lanzar Gazebo (headless)",
+      "type": "shell",
+      "command": "DISPLAY=:99 LIBGL_ALWAYS_SOFTWARE=1 ign gazebo -r -s /root/robot_ws/worlds/camara_robot.sdf",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Bridge camara Ignition->ROS2",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && ros2 run ros_gz_bridge parameter_bridge /camara/image@sensor_msgs/msg/Image[ignition.msgs.Image --ros-args -r /camara/image:=/camera/image_raw",
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Ejecutar script Python activo",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && source /root/robot_ws/install/setup.bash && python3 ${file}",
+      "group": { "kind": "build", "isDefault": true },
+      "presentation": { "reveal": "always", "panel": "new" }
+    },
+    {
+      "label": "Compilar workspace (colcon build)",
+      "type": "shell",
+      "command": "source /opt/ros/humble/setup.bash && cd /root/robot_ws && colcon build --symlink-install",
+      "presentation": { "reveal": "always", "panel": "new" }
+    }
+  ]
+}
