@@ -4,6 +4,11 @@
 *.onnx
 *.weights
 
+# ROS 2 - generado por colcon build (cada dev lo compila en su maquina)
+install/
+build/
+log/
+
 # Python
 __pycache__/
 *.py[cod]
@@ -11,7 +16,6 @@ __pycache__/
 .venv/
 venv/
 dist/
-build/
 
 # Entorno
 .env

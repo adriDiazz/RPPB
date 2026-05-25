@@ -2,7 +2,7 @@
 <sdf version="1.8">
   <world name="camara_robot">
 
-    <!-- Física y plugins básicos -->
+    <!-- Plugins básicos -->
     <plugin filename="ignition-gazebo-physics-system" name="ignition::gazebo::systems::Physics"/>
     <plugin filename="ignition-gazebo-user-commands-system" name="ignition::gazebo::systems::UserCommands"/>
     <plugin filename="ignition-gazebo-scene-broadcaster-system" name="ignition::gazebo::systems::SceneBroadcaster"/>
@@ -10,13 +10,24 @@
       <render_engine>ogre</render_engine>
     </plugin>
 
-    <!-- Luz ambiental -->
+    <!-- Luz principal -->
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>
-      <diffuse>0.8 0.8 0.8 1</diffuse>
-      <specular>0.2 0.2 0.2 1</specular>
-      <direction>-0.5 0.1 -0.9</direction>
+      <diffuse>1.0 1.0 1.0 1</diffuse>
+      <specular>0.5 0.5 0.5 1</specular>
+      <direction>-0.3 0.1 -0.9</direction>
+    </light>
+
+    <!-- Luz de relleno para evitar sombras duras -->
+    <light name="luz_relleno" type="point">
+      <pose>0 0 2.5 0 0 0</pose>
+      <diffuse>0.6 0.6 0.6 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+      <attenuation>
+        <range>10</range>
+        <linear>0.1</linear>
+      </attenuation>
     </light>
 
     <!-- Suelo -->
@@ -36,74 +47,163 @@
       </link>
     </model>
 
-    <!-- Mesa -->
+    <!-- Mesa de madera -->
     <model name="mesa">
       <static>true</static>
       <pose>0.5 0 0.375 0 0 0</pose>
       <link name="link">
         <collision name="collision">
-          <geometry><box><size>0.8 0.8 0.75</size></box></geometry>
+          <geometry><box><size>1.0 0.8 0.75</size></box></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>0.8 0.8 0.75</size></box></geometry>
-          <material><ambient>0.6 0.4 0.2 1</ambient><diffuse>0.7 0.5 0.3 1</diffuse></material>
+          <geometry><box><size>1.0 0.8 0.75</size></box></geometry>
+          <material><ambient>0.55 0.35 0.15 1</ambient><diffuse>0.65 0.42 0.2 1</diffuse></material>
         </visual>
       </link>
     </model>
 
-    <!-- Cubo rojo (objeto a detectar) -->
-    <model name="cubo_rojo">
-      <pose>0.4 0.1 0.8 0 0 0</pose>
+    <!-- Lata de refresco (bottle en COCO) -->
+    <model name="lata">
+      <pose>0.35 0.1 0.812 0 0 0</pose>
       <link name="link">
-        <inertial><mass>0.1</mass></inertial>
+        <inertial><mass>0.35</mass></inertial>
         <collision name="collision">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
+          <geometry><cylinder><radius>0.033</radius><length>0.122</length></cylinder></geometry>
         </collision>
         <visual name="visual">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
-          <material><ambient>1 0 0 1</ambient><diffuse>1 0 0 1</diffuse></material>
+          <geometry><cylinder><radius>0.033</radius><length>0.122</length></cylinder></geometry>
+          <material>
+            <ambient>0.8 0.1 0.1 1</ambient>
+            <diffuse>0.9 0.15 0.15 1</diffuse>
+            <specular>0.8 0.8 0.8 1</specular>
+          </material>
         </visual>
       </link>
     </model>
 
-    <!-- Cubo azul -->
-    <model name="cubo_azul">
-      <pose>0.5 -0.15 0.8 0 0 0</pose>
+    <!-- Botella de agua (bottle en COCO) -->
+    <model name="botella">
+      <pose>0.55 -0.12 0.825 0 0 0</pose>
       <link name="link">
-        <inertial><mass>0.1</mass></inertial>
-        <collision name="collision">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
+        <inertial><mass>0.5</mass></inertial>
+        <!-- Cuerpo de la botella -->
+        <collision name="col_cuerpo">
+          <geometry><cylinder><radius>0.035</radius><length>0.20</length></cylinder></geometry>
         </collision>
-        <visual name="visual">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
-          <material><ambient>0 0 1 1</ambient><diffuse>0 0 1 1</diffuse></material>
+        <visual name="vis_cuerpo">
+          <geometry><cylinder><radius>0.035</radius><length>0.20</length></cylinder></geometry>
+          <material>
+            <ambient>0.2 0.5 0.9 0.7</ambient>
+            <diffuse>0.3 0.6 1.0 0.7</diffuse>
+            <specular>1.0 1.0 1.0 1</specular>
+          </material>
+        </visual>
+        <!-- Tapón -->
+        <visual name="vis_tapon">
+          <pose>0 0 0.11 0 0 0</pose>
+          <geometry><cylinder><radius>0.022</radius><length>0.02</length></cylinder></geometry>
+          <material><ambient>0.1 0.7 0.1 1</ambient><diffuse>0.1 0.8 0.1 1</diffuse></material>
         </visual>
       </link>
     </model>
 
-    <!-- Cubo verde -->
-    <model name="cubo_verde">
-      <pose>0.6 0.2 0.8 0 0 0</pose>
+    <!-- Taza (cup en COCO) -->
+    <model name="taza">
+      <pose>0.45 0.22 0.787 0 0 0</pose>
       <link name="link">
-        <inertial><mass>0.1</mass></inertial>
-        <collision name="collision">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
+        <inertial><mass>0.25</mass></inertial>
+        <!-- Cuerpo taza -->
+        <collision name="col_cuerpo">
+          <geometry><cylinder><radius>0.038</radius><length>0.075</length></cylinder></geometry>
         </collision>
-        <visual name="visual">
-          <geometry><box><size>0.06 0.06 0.06</size></box></geometry>
-          <material><ambient>0 0.8 0 1</ambient><diffuse>0 0.8 0 1</diffuse></material>
+        <visual name="vis_cuerpo">
+          <geometry><cylinder><radius>0.038</radius><length>0.075</length></cylinder></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>1.0 1.0 1.0 1</diffuse>
+            <specular>0.3 0.3 0.3 1</specular>
+          </material>
+        </visual>
+        <!-- Asa -->
+        <visual name="vis_asa">
+          <pose>0.048 0 0 0 1.5708 0</pose>
+          <geometry><cylinder><radius>0.008</radius><length>0.04</length></cylinder></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>1.0 1.0 1.0 1</diffuse></material>
         </visual>
       </link>
     </model>
 
-    <!-- Cámara virtual apuntando a la mesa -->
+    <!-- Smartphone (cell phone en COCO) -->
+    <model name="smartphone">
+      <pose>0.62 0.15 0.753 0 0 0.3</pose>
+      <link name="link">
+        <inertial><mass>0.18</mass></inertial>
+        <collision name="collision">
+          <geometry><box><size>0.075 0.15 0.008</size></box></geometry>
+        </collision>
+        <visual name="vis_cuerpo">
+          <geometry><box><size>0.075 0.15 0.008</size></box></geometry>
+          <material>
+            <ambient>0.1 0.1 0.1 1</ambient>
+            <diffuse>0.15 0.15 0.15 1</diffuse>
+            <specular>0.9 0.9 0.9 1</specular>
+          </material>
+        </visual>
+        <!-- Pantalla -->
+        <visual name="vis_pantalla">
+          <pose>0 0 0.005 0 0 0</pose>
+          <geometry><box><size>0.065 0.13 0.001</size></box></geometry>
+          <material><ambient>0.05 0.05 0.2 1</ambient><diffuse>0.1 0.1 0.4 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Manzana (apple en COCO) -->
+    <model name="manzana">
+      <pose>0.3 -0.1 0.787 0 0 0</pose>
+      <link name="link">
+        <inertial><mass>0.18</mass></inertial>
+        <collision name="collision">
+          <geometry><sphere><radius>0.038</radius></sphere></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><sphere><radius>0.038</radius></sphere></geometry>
+          <material>
+            <ambient>0.8 0.05 0.05 1</ambient>
+            <diffuse>0.9 0.08 0.08 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Naranja (orange en COCO) -->
+    <model name="naranja">
+      <pose>0.65 -0.1 0.787 0 0 0</pose>
+      <link name="link">
+        <inertial><mass>0.2</mass></inertial>
+        <collision name="collision">
+          <geometry><sphere><radius>0.04</radius></sphere></geometry>
+        </collision>
+        <visual name="visual">
+          <geometry><sphere><radius>0.04</radius></sphere></geometry>
+          <material>
+            <ambient>0.95 0.45 0.0 1</ambient>
+            <diffuse>1.0 0.5 0.0 1</diffuse>
+            <specular>0.3 0.3 0.3 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- Cámara virtual — más alta y con mejor ángulo para ver toda la mesa -->
     <model name="camara">
       <static>true</static>
-      <pose>-0.2 0 1.4 0 0.6 0</pose>
+      <pose>-0.1 0 1.6 0 0.75 0</pose>
       <link name="link">
         <sensor name="camara_sensor" type="camera">
           <camera>
-            <horizontal_fov>1.047</horizontal_fov>
+            <horizontal_fov>1.2</horizontal_fov>
             <image>
               <width>640</width>
               <height>480</height>
